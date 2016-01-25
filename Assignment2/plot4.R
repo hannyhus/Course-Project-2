@@ -1,0 +1,13 @@
+project2 <- unzip("exdata-data-NEI_data.zip") 
+NEI <- readRDS("summarySCC_PM25.rds")
+SCC <- readRDS("Source_Classification_Code.rds")
+library(ggplot2)
+NEISCC <- merge(NEI,SCC,by="SCC")
+newdata <- grepl("coal",NEISCC$Short.Name,ignore.case = TRUE)
+subsetdata <- NEISCC[newdata,]
+aggdata <- aggregate(Emissions~year,subsetdata,sum)
+g <- ggplot(aggdata,aes(factor(year),Emissions))
+graph <- g + geom_bar(stat="identity") + xlab("year") + ylab("Total PM '[2.5]*' Emission") + ggtitle("Emissions From Coal Combustion-Related Sources")
+print(graph)
+dev.copy(png, file="plot4.png",width=480, height=480)
+dev.off()
